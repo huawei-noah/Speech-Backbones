@@ -1,0 +1,10 @@
+Cython==0.29.23
+numpy==1.19.5
+torch==1.9.0
+matplotlib==3.3.3
+einops==0.3.0
+inflect==5.0.2
+Unidecode==1.1.2
+librosa==0.8.0
+scipy==1.5.4
+tqdm
