@@ -2,8 +2,7 @@
 
 This is the main repository of open-sourced speech technology by Huawei Noah's Ark Lab.
 
-
-Grad-TTS
+## Grad-TTS
 
 Official implementation of the Grad-TTS model based on Diffusion Probabilistic Modelling. For all details check out our paper accepted to ICML 2021 via this link.
 
