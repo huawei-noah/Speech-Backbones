@@ -74,7 +74,7 @@ def inference(text):
     x = torch.LongTensor(intersperse(text_to_sequence(text, dictionary=cmu), len(symbols)))[None]
     x_lengths = torch.LongTensor([x.shape[-1]])
     x.shape, x_lengths
-    y_enc, y_dec, attn = generator.forward(x, x_lengths, n_timesteps=10, temperature=1.5,
+    y_enc, y_dec, attn = generator.forward(x, x_lengths, n_timesteps=3, temperature=5,
                                         stoc=False, length_scale=0.91)
 
     with torch.no_grad():
