@@ -43,6 +43,12 @@ n_heads = params.n_heads
 window_size = params.window_size
 
 n_feats = params.n_feats
+n_fft = params.n_fft
+sample_rate = params.sample_rate
+hop_length = params.hop_length
+win_length = params.win_length
+f_min = params.f_min
+f_max = params.f_max
 
 dec_dim = params.dec_dim
 beta_min = params.beta_min
@@ -58,15 +64,19 @@ if __name__ == "__main__":
     logger = SummaryWriter(log_dir=log_dir)
 
     print('Initializing data loaders...')
-    train_dataset = TextMelDataset(train_filelist_path, cmudict_path, add_blank)
+    train_dataset = TextMelDataset(train_filelist_path, cmudict_path, add_blank,
+                                   n_fft, n_feats, sample_rate, hop_length,
+                                   win_length, f_min, f_max)
     batch_collate = TextMelBatchCollate()
     loader = DataLoader(dataset=train_dataset, batch_size=batch_size,
                         collate_fn=batch_collate, drop_last=True,
                         num_workers=4, shuffle=False)
-    test_dataset = TextMelDataset(valid_filelist_path, cmudict_path, add_blank)
+    test_dataset = TextMelDataset(valid_filelist_path, cmudict_path, add_blank,
+                                  n_fft, n_feats, sample_rate, hop_length,
+                                  win_length, f_min, f_max)
 
     print('Initializing model...')
-    model = GradTTS(nsymbols, n_enc_channels, filter_channels, filter_channels_dp, 
+    model = GradTTS(nsymbols, 1, None, n_enc_channels, filter_channels, filter_channels_dp, 
                     n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
                     n_feats, dec_dim, beta_min, beta_max, pe_scale).cuda()
     print('Number of encoder + duration predictor parameters: %.2fm' % (model.encoder.nparams/1e6))
@@ -139,6 +149,7 @@ if __name__ == "__main__":
             continue
 
         model.eval()
+        print('Synthesis...')
         with torch.no_grad():
             for i, item in enumerate(test_batch):
                 x = item['x'].to(torch.long).unsqueeze(0).cuda()

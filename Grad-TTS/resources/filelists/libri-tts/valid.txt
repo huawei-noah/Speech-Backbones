@@ -1,0 +1,4 @@
+DUMMY/train-clean-100/103/1241/103_1241_000000_000001.wav|Matthew Cuthbert is surprised|46
+DUMMY/train-clean-100/3857/182317/3857_182317_000028_000002.wav|That is the kind of hold that curiosity has on the monkeys.|120
+DUMMY/train-clean-100/4406/16882/4406_16882_000025_000001.wav|I was at this time knitting a pair of white cotton stockings for my mistress; and had not yet wrought upon a Sabbath day.|94
+DUMMY/train-clean-100/5339/14134/5339_14134_000041_000008.wav|The thought of poor dead Annie Coulson flashed into Philip's mind.|216
