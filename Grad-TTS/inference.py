@@ -35,10 +35,18 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--file', type=str, required=True, help='path to a file with texts to synthesize')
     parser.add_argument('-c', '--checkpoint', type=str, required=True, help='path to a checkpoint of Grad-TTS')
     parser.add_argument('-t', '--timesteps', type=int, required=False, default=10, help='number of timesteps of reverse diffusion')
+    parser.add_argument('-s', '--speaker_id', type=int, required=False, default=None, help='speaker id for multispeaker model')
     args = parser.parse_args()
     
+    if not isinstance(args.speaker_id, type(None)):
+        assert params.n_spks > 1, "Ensure you set right number of speakers in `params.py`."
+        spk = torch.LongTensor([args.speaker_id]).cuda()
+    else:
+        spk = None
+    
     print('Initializing Grad-TTS...')
-    generator = GradTTS(len(symbols)+1, params.n_enc_channels, params.filter_channels,
+    generator = GradTTS(len(symbols)+1, params.n_spks, params.spk_emb_dim,
+                        params.n_enc_channels, params.filter_channels,
                         params.filter_channels_dp, params.n_heads, params.n_enc_layers,
                         params.enc_kernel, params.enc_dropout, params.window_size,
                         params.n_feats, params.dec_dim, params.beta_min, params.beta_max, params.pe_scale)
@@ -57,7 +65,7 @@ if __name__ == '__main__':
     with open(args.file, 'r', encoding='utf-8') as f:
         texts = [line.strip() for line in f.readlines()]
     cmu = cmudict.CMUDict('./resources/cmu_dictionary')
-        
+    
     with torch.no_grad():
         for i, text in enumerate(texts):
             print(f'Synthesizing {i} text...', end=' ')
@@ -66,7 +74,7 @@ if __name__ == '__main__':
             
             t = dt.datetime.now()
             y_enc, y_dec, attn = generator.forward(x, x_lengths, n_timesteps=args.timesteps, temperature=1.5,
-                                                   stoc=False, length_scale=0.91)
+                                                   stoc=False, spk=spk, length_scale=0.91)
             t = (dt.datetime.now() - t).total_seconds()
             print(f'Grad-TTS RTF: {t * 22050 / (y_dec.shape[-1] * 256)}')
 

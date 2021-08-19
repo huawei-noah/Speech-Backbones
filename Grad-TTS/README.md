@@ -31,33 +31,35 @@ Secondly, build `monotonic_align` code (Cython):
 cd model/monotonic_align; python setup.py build_ext --inplace; cd ../..
 ```
 
-Note: code is tested on Python==3.6.9.
+**Note**: code is tested on Python==3.6.9.
 
 ## Inference
 
-You can download Grad-TTS and HiFi-GAN checkpoints trained on LJSpeech dataset (22kHz) from [here](https://drive.google.com/drive/folders/1grsfccJbmEuSBGQExQKr3cVxNV0xEOZ7?usp=sharing).
+You can download Grad-TTS and HiFi-GAN checkpoints trained on LJSpeech* and Libri-TTS datasets (22kHz) from [here](https://drive.google.com/drive/folders/1grsfccJbmEuSBGQExQKr3cVxNV0xEOZ7?usp=sharing).
 
-**Note**: we open-source 2 checkpoints of Grad-TTS. They are the same models but trained with different positional encoding scale: **x1** (`"grad-tts-old.pt"`, ICML 2021 sumbission model) and **x1000** (`"grad-tts.pt"`). To use the former set `params.pe_scale=1` and to use the latter set `params.pe_scale=1000`.
+***Note**: we open-source 2 checkpoints of Grad-TTS trained on LJSpeech. They are the same models but trained with different positional encoding scale: **x1** (`"grad-tts-old.pt"`, ICML 2021 sumbission model) and **x1000** (`"grad-tts.pt"`). To use the former set `params.pe_scale=1` and to use the latter set `params.pe_scale=1000`. Libri-TTS checkpoint was trained with scale **x1000**.
 
 Put necessary Grad-TTS and HiFi-GAN checkpoints into `checkpts` folder in root Grad-TTS directory (note: in `inference.py` you can change default HiFi-GAN path).
 
 1. Create text file with sentences you want to synthesize like `resources/filelists/synthesis.txt`.
-2. Run script `inference.py` by providing path to the text file, path to the Grad-TTS checkpoint and number of iterations to be used for reverse diffusion (default: 10):
+2. For single speaker set `params.n_spks=1` and for multispeaker (Libri-TTS) inference set `params.n_spks=247`.
+3. Run script `inference.py` by providing path to the text file, path to the Grad-TTS checkpoint, number of iterations to be used for reverse diffusion (default: 10) and speaker id if you want to perform multispeaker inference:
     ```bash
-    python inference.py -f <your-text-file> -c checkpts/grad-tts.pt -t <number-of-timesteps>
+    python inference.py -f <your-text-file> -c <grad-tts-checkpoint> -t <number-of-timesteps> -s <speaker-id-if-multispeaker>
     ```
-3. Check out folder called `out` for generated audios.
+4. Check out folder called `out` for generated audios.
 
-You can also perform *interactive inference* by running Jupyter Notebook `inference.ipynb`.
+You can also perform *interactive inference* by running Jupyter Notebook `inference.ipynb` or by using our [Google Colab Demo](https://colab.research.google.com/drive/1YNrXtkJQKcYDmIYJeyX8s5eXxB4zgpZI?usp=sharing).
 
 ## Training
 
-1. Make filelists of your audio data like ones included into `resources/filelists` folder. Note, that you need to extract mel-spectrograms and save them on disk as `numpy` files. You can use `mel_spectrogram()` function from `hifi-gan/meldataset.py` to convert your audios into mel-spectrograms.
+1. Make filelists of your audio data like ones included into `resources/filelists` folder. For single speaker training refer to `jspeech` filelists and to `libri-tts` filelists for multispeaker.
 2. Set experiment configuration in `params.py` file.
 3. Specify your GPU device and run training script:
     ```bash
     export CUDA_VISIBLE_DEVICES=YOUR_GPU_ID
-    python train.py
+    python train.py  # if single speaker
+    python train_multi_speaker.py  # if multispeaker
     ```
 4. To track your training process run tensorboard server on any available port:
     ```bash
