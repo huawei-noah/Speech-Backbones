@@ -14,4 +14,5 @@ Official implementation of the Grad-TTS model based on Diffusion Probabilistic M
  
 Official implementation of SPIRAL: Self-supervised Perturbation-Invariant Representation Learning for Speech Pre-Training. For all details check out our paper accepted to ICLR 2022 via [this](https://arxiv.org/abs/2201.10207) link.
 
+**Authors**: Wenyong Huang, Zhenhe Zhang, Yu Ting Yeung, Xin Jiang, Qun Liu.
  
