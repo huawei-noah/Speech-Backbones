@@ -1,0 +1,15 @@
+numpy>=1.18.2
+onnx>=1.7.0
+pytorch-lightning==1.1.0
+python-dateutil
+torch
+torchtext==0.6
+wget
+wrapt
+ruamel.yaml
+scikit-learn
+omegaconf>=2.0.5
+hydra-core>=1.0.4
+transformers>=4.0.1
+sentencepiece<1.0.0
+webdataset
