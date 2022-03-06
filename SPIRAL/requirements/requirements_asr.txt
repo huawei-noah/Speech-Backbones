@@ -1,0 +1,17 @@
+braceexpand
+editdistance
+frozendict
+inflect
+kaldi-io
+librosa==0.8.1
+marshmallow
+packaging
+ruamel.yaml
+soundfile
+sox
+torch-stft
+unidecode
+kaldi-python-io
+scipy
+pandas
+g2p_en
