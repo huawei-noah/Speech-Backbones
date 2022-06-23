@@ -111,7 +111,7 @@ You can add the following arguments to save the logits for the test data, it can
 
 ## Pre-trained models
 
-We have release the **pretrained** models in [Hugging Face 🤗](https://huggingface.co), please enjoy!
+We have release the **pretrained** models in [Hugging Face 🤗](https://huggingface.co/huawei-noah). Please enjoy!
 
 | Model | Pretrained Data | Download |
 | ----------- | ----------- | -------- |
