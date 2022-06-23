@@ -115,9 +115,9 @@ We have released the **pretrained** models in [Hugging Face 🤗](https://huggin
 
 | Model | Pretrained Data | Download |
 | ----------- | ----------- | -------- |
-| Spiral-base | 960 hrs LibriSpeech (LS960) | [huawei-noah/SPIRAL-base](https://huggingface.co/huawei-noah/SPIRAL-base) |
-| Spiral-base-MCT| noise-robustness training with LS960 <br> and [ICASSP 2021 DNS Challenge](https://github.com/microsoft/DNS-Challenge/tree/icassp2021-final) noise dataset | [huawei-noah/SPIRAL-base-MCT](https://huggingface.co/huawei-noah/SPIRAL-base-MCT) |
-| Spiral-Large | 60k hrs Libri-Light| [huawei-noah/SPIRAL-Large](https://huggingface.co/huawei-noah/SPIRAL-Large) |
+| SPIRAL-base | 960 hrs LibriSpeech (LS960) | [huawei-noah/SPIRAL-base](https://huggingface.co/huawei-noah/SPIRAL-base) |
+| SPIRAL-base-MCT| noise-robustness training with LS960 <br> and [ICASSP 2021 DNS Challenge](https://github.com/microsoft/DNS-Challenge/tree/icassp2021-final) noise dataset | [huawei-noah/SPIRAL-base-MCT](https://huggingface.co/huawei-noah/SPIRAL-base-MCT) |
+| SPIRAL-Large | 60k hrs Libri-Light| [huawei-noah/SPIRAL-Large](https://huggingface.co/huawei-noah/SPIRAL-Large) |
 
 
 ## License
