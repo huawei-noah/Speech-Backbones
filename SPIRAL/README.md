@@ -12,7 +12,7 @@ pip install -r requirements/requirements_asr.txt
 ## Pre-training
 
 ### Data preparing
-For pre-training, you shoud prepare a directory containing wav files, we recommond splitting each wav into 10 to 20 seconds.
+For pre-training, you should prepare a directory containing wav files, we recommend splitting each wav into 10 to 20 seconds.
 And then prepare a json manifest file in the following format.
 ```
 {"audio_filepath": "train-clean-100-wav/374-180298-0000.wav", "duration": 14.53, "text": "chapter sixteen i might have told you of the beginning of this liaison in a few lines but i wanted you to see every step by which we came i to agree to whatever marguerite wished"}
