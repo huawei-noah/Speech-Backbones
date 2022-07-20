@@ -1,0 +1,12 @@
+torchaudio==0.5.1
+torch==1.7.1
+einops==0.3.0
+librosa==0.6.0
+webrtcvad==2.0.10
+numpy==1.19.0
+scipy==1.5.1
+matplotlib==3.3.3
+tb-nightly
+future
+tqdm
+tgt
