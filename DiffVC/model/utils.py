@@ -7,7 +7,6 @@
 # MIT License for more details.
 
 import torch
-import torchaudio
 import numpy as np
 from librosa.filters import mel as librosa_mel_fn
 
@@ -68,7 +67,7 @@ class InitialReconstruction(BaseModule):
         real_part = torch.ones_like(stftm, device=stftm.device)
         imag_part = torch.zeros_like(stftm, device=stftm.device)
         stft = torch.stack([real_part, imag_part], -1)*stftm.unsqueeze(-1)
-        istft = torchaudio.functional.istft(stft, n_fft=self.n_fft, 
+        istft = torch.istft(stft, n_fft=self.n_fft,
                            hop_length=self.hop_size, win_length=self.n_fft, 
                            window=self.window, center=True)
         return istft.unsqueeze(1)
@@ -103,7 +102,7 @@ class FastGL(BaseModule):
             stftm = torch.sqrt(torch.clamp(real_part**2 + imag_part**2, min=1e-8))
             angles = s / stftm.unsqueeze(-1)
             s = c * (angles + self.momentum * (angles - prev_angles))
-            x = torchaudio.functional.istft(s, n_fft=self.n_fft, hop_length=self.hop_size, 
+            x = torch.istft(s, n_fft=self.n_fft, hop_length=self.hop_size,
                                             win_length=self.n_fft, window=self.window, 
                                             center=True)
             prev_angles = angles
