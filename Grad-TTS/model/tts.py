@@ -143,7 +143,7 @@ class GradTTS(BaseModule):
         dur_loss = duration_loss(logw, logw_, x_lengths)
 
         # Cut a small segment of mel-spectrogram in order to increase batch size
-        if not isinstance(out_size, type(None)):
+        if not isinstance(out_size, type(None)) and out_size < y_max_length:
             max_offset = (y_lengths - out_size).clamp(0)
             offset_ranges = list(zip([0] * max_offset.shape[0], max_offset.cpu().numpy()))
             out_offset = torch.LongTensor([
@@ -161,7 +161,7 @@ class GradTTS(BaseModule):
                 y_cut[i, :, :y_cut_length] = y_[:, cut_lower:cut_upper]
                 attn_cut[i, :, :y_cut_length] = attn[i, :, cut_lower:cut_upper]
             y_cut_lengths = torch.LongTensor(y_cut_lengths)
-            y_cut_mask = sequence_mask(y_cut_lengths).unsqueeze(1).to(y_mask)
+            y_cut_mask = sequence_mask(y_cut_lengths, out_size).unsqueeze(1).to(y_mask)
             
             attn = attn_cut
             y = y_cut
