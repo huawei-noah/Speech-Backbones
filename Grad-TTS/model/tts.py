@@ -44,7 +44,8 @@ class GradTTS(BaseModule):
             self.spk_emb = torch.nn.Embedding(n_spks, spk_emb_dim)
         self.encoder = TextEncoder(n_vocab, n_feats, n_enc_channels, 
                                    filter_channels, filter_channels_dp, n_heads, 
-                                   n_enc_layers, enc_kernel, enc_dropout, window_size)
+                                   n_enc_layers, enc_kernel, enc_dropout, window_size,
+                                   spk_emb_dim, n_spks)
         self.decoder = Diffusion(n_feats, dec_dim, n_spks, spk_emb_dim, beta_min, beta_max, pe_scale)
 
     @torch.no_grad()
