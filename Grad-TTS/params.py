@@ -8,11 +8,10 @@
 
 from model.utils import fix_len_compatibility
 
-
 # data parameters
-train_filelist_path = 'resources/filelists/ljspeech/train.txt'
-valid_filelist_path = 'resources/filelists/ljspeech/valid.txt'
-test_filelist_path = 'resources/filelists/ljspeech/test.txt'
+train_filelist_path = 'data/filelists/ljs_audio_text_train_filelist.txt'
+valid_filelist_path = 'data/filelists/ljs_audio_text_val_filelist.txt'
+test_filelist_path = 'data/filelists/ljs_audio_text_test_filelist.txt'
 cmudict_path = 'resources/cmu_dictionary'
 add_blank = True
 n_feats = 80

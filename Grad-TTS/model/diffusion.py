@@ -7,6 +7,7 @@
 # MIT License for more details.
 
 import math
+
 import torch
 from einops import rearrange
 
@@ -253,6 +254,9 @@ class Diffusion(BaseModule):
 
     @torch.no_grad()
     def reverse_diffusion(self, z, mask, mu, n_timesteps, stoc=False, spk=None):
+        
+        return self.fast_maximum_likelihood_reverse_diffusion(z, mask, mu, n_timesteps, stoc, spk)
+        print("Using original reverse diffusion")
         h = 1.0 / n_timesteps
         xt = z * mask
         for i in range(n_timesteps):
@@ -272,6 +276,80 @@ class Diffusion(BaseModule):
                 dxt = 0.5 * (mu - xt - self.estimator(xt, mask, mu, t, spk))
                 dxt = dxt * noise_t * h
             xt = (xt - dxt) * mask
+        return xt
+    
+    def get_noise(self, t, beta_init, beta_term, cumulative=False):
+        if cumulative:
+            noise = beta_init*t + 0.5*(beta_term - beta_init)*(t**2)
+        else:
+            noise = beta_init + (beta_term - beta_init)*t
+        return noise
+    
+    def get_gamma(self, s, t, beta_init, beta_term):
+        gamma = beta_init*(t-s) + 0.5*(beta_term-beta_init)*(t**2-s**2)
+        gamma = torch.exp(-0.5*gamma)
+        return gamma
+
+    def get_mu(self, s, t):
+        gamma_0_s = self.get_gamma(0, s, self.beta_min, self.beta_max)
+        gamma_0_t = self.get_gamma(0, t, self.beta_min, self.beta_max)
+        gamma_s_t = self.get_gamma(s, t, self.beta_min, self.beta_max)
+        mu = gamma_s_t * ((1-gamma_0_s**2) / (1-gamma_0_t**2))
+        return mu        
+
+    def get_nu(self, s, t):
+        gamma_0_s = self.get_gamma(0, s, self.beta_min, self.beta_max)
+        gamma_0_t = self.get_gamma(0, t, self.beta_min, self.beta_max)
+        gamma_s_t = self.get_gamma(s, t, self.beta_min, self.beta_max)
+        nu = gamma_0_s * ((1-gamma_s_t**2) / (1-gamma_0_t**2))
+        return nu
+
+    def get_sigma(self, s, t):
+        gamma_0_s = self.get_gamma(0, s, self.beta_min, self.beta_max)
+        gamma_0_t = self.get_gamma(0, t, self.beta_min, self.beta_max)
+        gamma_s_t = self.get_gamma(s, t, self.beta_min, self.beta_max)
+        sigma = torch.sqrt(((1 - gamma_0_s**2) * (1 - gamma_s_t**2)) / (1 - gamma_0_t**2))
+        return sigma        
+
+    def get_kappa(self, t, h, noise):
+        nu = self.get_nu(t-h, t)
+        gamma_0_t = self.get_gamma(0, t, self.beta_min, self.beta_max)
+        kappa = (nu*(1-gamma_0_t**2)/(gamma_0_t*noise*h) - 1)
+        return kappa
+
+    def get_omega(self, t, h, noise):
+        mu = self.get_mu(t-h, t)
+        kappa = self.get_kappa(t, h, noise)
+        gamma_0_t = self.get_gamma(0, t, self.beta_min, self.beta_max)
+        omega = (mu-1)/(noise*h) + (1+kappa)/(1-gamma_0_t**2) - 0.5
+        return omega 
+    
+    
+    @torch.no_grad()
+    def fast_maximum_likelihood_reverse_diffusion(self, z, mask, mu, n_timesteps, stoc=False, spk=None):
+        print("Using fast maximum likelihood reverse diffusion")
+        h = 1.0 / n_timesteps
+        xt = z * mask
+        for i in range(n_timesteps):
+            t = (1.0 - i*h) * torch.ones(z.shape[0], dtype=z.dtype,
+                                                 device=z.device)            
+            time = t.unsqueeze(-1).unsqueeze(-1)
+            noise_t = self.get_noise(time, self.beta_min, self.beta_max,
+                                cumulative=False)
+
+            kappa_t_h = self.get_kappa(t, h, noise_t) 
+            omega_t_h = self.get_omega(t, h, noise_t)
+            sigma_t_h = self.get_sigma(t-h, t)
+ 
+            es = self.estimator(xt, mask, mu, t, spk)
+
+            dxt = ((0.5+omega_t_h)*(xt - mu) + (1+kappa_t_h) * es)
+            dxt_stoc = torch.randn(z.shape, dtype=z.dtype, device=z.device,
+                                           requires_grad=False)
+            dxt_stoc = dxt_stoc * sigma_t_h
+
+            dxt = dxt * noise_t * h + dxt_stoc
+            xt = (xt + dxt) * mask
         return xt
 
     @torch.no_grad()
